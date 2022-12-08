@@ -7,37 +7,41 @@ use std::fs;
 // plus the score for the outcome of the round (0 if you lost, 3 if the round was a draw, and 6 if you won).
 
 #[derive(Debug)]
-struct Match<'a> {
-    our_move: &'a str,
+
+enum Move {
+    Rock,
+    Paper,
+    Scissors,
+}
+#[derive(Debug)]
+struct Match {
+    our_move: Move,
     outcome: u32,
 }
 
-impl<'a> Match<'a> {
-    pub fn new(moves: (&'a str, &'a str)) -> Self {
+impl Match {
+    pub fn new(moves: (&str, &str)) -> Self {
         let oponent_move = match moves.0.trim() {
-            "A" => "rock",
-            "B" => "paper",
-            "C" => "scissors",
+            "A" => Move::Rock,
+            "B" => Move::Paper,
+            "C" => Move::Scissors,
             _ => panic!("Unmatched case {:?}", moves.0),
         };
         let our_move = match moves.1.trim() {
             "X" => match oponent_move {
-                "rock" => "scissors",
-                "paper" => "rock",
-                "scissors" => "paper",
-                _ => panic!("Unmatched case {:?}", moves.0),
+                Move::Rock => Move::Scissors,
+                Move::Paper => Move::Rock,
+                Move::Scissors => Move::Paper,
             },
             "Y" => match oponent_move {
-                "rock" => "rock",
-                "paper" => "paper",
-                "scissors" => "scissors",
-                _ => panic!("Unmatched case {:?}", moves.0),
+                Move::Rock => Move::Rock,
+                Move::Paper => Move::Paper,
+                Move::Scissors => Move::Scissors,
             },
             "Z" => match oponent_move {
-                "rock" => "paper",
-                "paper" => "scissors",
-                "scissors" => "rock",
-                _ => panic!("Unmatched case {:?}", moves.0),
+                Move::Rock => Move::Paper,
+                Move::Paper => Move::Scissors,
+                Move::Scissors => Move::Rock,
             },
             _ => panic!("Unmatched case {:?}", moves.1),
         };
@@ -56,18 +60,17 @@ impl<'a> Match<'a> {
     fn calculate_score(&self) -> u32 {
         match *self {
             Match {
-                our_move: "rock",
+                our_move: Move::Rock,
                 outcome: x,
             } => 1 + x,
             Match {
-                our_move: "paper",
+                our_move: Move::Paper,
                 outcome: x,
             } => 2 + x,
             Match {
-                our_move: "scissors",
+                our_move: Move::Scissors,
                 outcome: x,
             } => 3 + x,
-            _ => panic!("Unmached case, {:?}", self),
         }
     }
 }
