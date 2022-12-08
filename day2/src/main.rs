@@ -8,73 +8,65 @@ use std::fs;
 
 #[derive(Debug)]
 struct Match<'a> {
-    oponent_move: &'a str,
     our_move: &'a str,
+    outcome: u32,
 }
 
 impl<'a> Match<'a> {
     pub fn new(moves: (&'a str, &'a str)) -> Self {
-        let player_1_move = match moves.0.trim() {
+        let oponent_move = match moves.0.trim() {
             "A" => "rock",
             "B" => "paper",
             "C" => "scissors",
             _ => panic!("Unmatched case {:?}", moves.0),
         };
-        let player_2_move = match moves.1.trim() {
-            "X" => "rock",
-            "Y" => "paper",
-            "Z" => "scissors",
+        let our_move = match moves.1.trim() {
+            "X" => match oponent_move {
+                "rock" => "scissors",
+                "paper" => "rock",
+                "scissors" => "paper",
+                _ => panic!("Unmatched case {:?}", moves.0),
+            },
+            "Y" => match oponent_move {
+                "rock" => "rock",
+                "paper" => "paper",
+                "scissors" => "scissors",
+                _ => panic!("Unmatched case {:?}", moves.0),
+            },
+            "Z" => match oponent_move {
+                "rock" => "paper",
+                "paper" => "scissors",
+                "scissors" => "rock",
+                _ => panic!("Unmatched case {:?}", moves.0),
+            },
+            _ => panic!("Unmatched case {:?}", moves.1),
+        };
+
+        let outcome = match moves.1.trim() {
+            "X" => 0,
+            "Y" => 3,
+            "Z" => 6,
             _ => panic!("Unmatched case {:?}", moves.1),
         };
 
         {
-            Match {
-                oponent_move: player_1_move,
-                our_move: player_2_move,
-            }
+            Match { our_move, outcome }
         }
     }
     fn calculate_score(&self) -> u32 {
         match *self {
             Match {
-                oponent_move: "rock",
                 our_move: "rock",
-            } => 1 + 3,
+                outcome: x,
+            } => 1 + x,
             Match {
-                oponent_move: "rock",
                 our_move: "paper",
-            } => 2 + 6,
+                outcome: x,
+            } => 2 + x,
             Match {
-                oponent_move: "rock",
                 our_move: "scissors",
-            } => 3 + 0,
-
-            Match {
-                oponent_move: "paper",
-                our_move: "rock",
-            } => 1 + 0,
-            Match {
-                oponent_move: "paper",
-                our_move: "paper",
-            } => 2 + 3,
-            Match {
-                oponent_move: "paper",
-                our_move: "scissors",
-            } => 3 + 6,
-
-            Match {
-                oponent_move: "scissors",
-                our_move: "rock",
-            } => 1 + 6,
-            Match {
-                oponent_move: "scissors",
-                our_move: "paper",
-            } => 2 + 0,
-            Match {
-                oponent_move: "scissors",
-                our_move: "scissors",
-            } => 3 + 3,
-
+                outcome: x,
+            } => 3 + x,
             _ => panic!("Unmached case, {:?}", self),
         }
     }
@@ -93,6 +85,13 @@ fn main() {
         total += score;
         // dbg!(score);
     }
+
+    /*
+    "Anyway, the second column says how the round needs to end:
+    X means you need to lose,
+    Y means you need to end the round in a draw,
+    and Z means you need to win. Good luck!"
+    */
 
     println!("Total: {:?}", total);
 }
