@@ -1,7 +1,6 @@
 use std::fs;
 
 fn main() {
-    println!("Hello, world!");
     let file_contents = fs::read_to_string("input.txt").expect("File contents should be read");
     let split: Vec<&str> = file_contents
         .split("\n")
